@@ -4,7 +4,7 @@ using FluentValidation;
 using Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 
-public class UpdateVehicleValidator : AbstractValidator<UpdateVehicleCommand>
+public class UpdateVehicleValidator : AbstractValidator<UpdateVehicleConmmand>
     {
         private readonly LabDbContext _db;
 
@@ -29,7 +29,7 @@ public class UpdateVehicleValidator : AbstractValidator<UpdateVehicleCommand>
                 .MaximumLength(30);
         }
 
-        private async Task<bool> BeUniquePlateNumber(UpdateVehicleCommand command, string plateNumber, CancellationToken token)
+        private async Task<bool> BeUniquePlateNumber(UpdateVehicleConmmand command, string plateNumber, CancellationToken token)
         {
             return !await _db.Vehicles
                 .AnyAsync(v => v.PlateNumber == plateNumber && v.Id != command.Id, token);

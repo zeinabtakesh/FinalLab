@@ -25,8 +25,9 @@ public class VehiclesController : ControllerBase
         var result = await _mediator.Send(new GetDriverByIdQuery(id));
         return result is null ? NotFound() : Ok(result);
     }
+    
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleCommand command)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleConmmand command)
     {
         if (id != command.Id)
             return BadRequest("ID in route and body must match.");

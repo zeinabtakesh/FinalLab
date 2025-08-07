@@ -4,12 +4,12 @@ using Infrastructure.Persistance;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-public class UpdateVehicleCommandHandler : IRequestHandler<UpdateVehicleCommand, bool>
+public class UpdateVehicleCommandHandler : IRequestHandler<UpdateVehicleConmmand, bool>
     {
         private readonly LabDbContext _db;
         public UpdateVehicleCommandHandler(LabDbContext db) => _db = db;
 
-        public async Task<bool> Handle(UpdateVehicleCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(UpdateVehicleConmmand request, CancellationToken cancellationToken)
         {
             var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == request.Id, cancellationToken);
             if (vehicle is null) return false;
