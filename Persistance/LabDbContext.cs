@@ -1,7 +1,4 @@
-﻿using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
-namespace Persistance ;
+﻿namespace Infrastructure.Persistance ;
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
 
