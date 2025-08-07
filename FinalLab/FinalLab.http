@@ -1,0 +1,6 @@
+@FinalLab_HostAddress = http://localhost:5279
+
+GET {{FinalLab_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
