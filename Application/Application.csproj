@@ -7,14 +7,17 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <Folder Include="Abstractions\" />
-      <Folder Include="Commands\" />
-      <Folder Include="Queries\" />
-      <Folder Include="Services\" />
+      <Folder Include="Contracts\" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\Persistance\Persistance.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="12.0.0" />
+      <PackageReference Include="MediatR" Version="13.0.0" />
     </ItemGroup>
 
 </Project>
