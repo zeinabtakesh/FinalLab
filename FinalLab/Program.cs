@@ -18,6 +18,7 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateVehicleCommand).Assembly));
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateDriverValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateVehicleValidator>();
 builder.Services.AddFluentValidationAutoValidation(); 
 
 builder.Services.AddControllers();

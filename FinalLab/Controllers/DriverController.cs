@@ -38,4 +38,26 @@ public class DriversController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDriverCommand command)
+    {
+        if (id != command.Id) return BadRequest("Mismatched ID");
+        var success = await _mediator.Send(command);
+        return success ? NoContent() : NotFound();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var success = await _mediator.Send(new DeleteDriverCommand(id));
+        return success ? NoContent() : NotFound();
+    }
+
+    [HttpPost("assign-driver")]
+    public async Task<IActionResult> AssignDriver([FromBody] AssignDriverCommand command)
+    {
+        var success = await _mediator.Send(command);
+        return success ? Ok("Driver assigned") : BadRequest("Assignment failed");
+    }
+
 }
