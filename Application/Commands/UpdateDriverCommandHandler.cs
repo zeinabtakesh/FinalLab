@@ -4,6 +4,10 @@ using Application.Commands;
 using Infrastructure.Persistance;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Persistance;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
 public class UpdateDriverCommandHandler : IRequestHandler<UpdateDriverCommand, bool>
     {
         private readonly LabDbContext _db;

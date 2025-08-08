@@ -4,7 +4,6 @@ using Application.Commands;
 using FluentValidation;
 using Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
-
 public class UpdateDriverValidator : AbstractValidator<UpdateDriverCommand>
     {
         private readonly LabDbContext _db;
@@ -13,23 +12,20 @@ public class UpdateDriverValidator : AbstractValidator<UpdateDriverCommand>
         {
             _db = db;
 
-            RuleFor(x => x.Id)
-                .NotEmpty();
+            RuleFor(d => d.Id)
+                .MustAsync((id, ct) => _db.Drivers.AnyAsync(x => x.Id == id, ct))
+                .WithMessage("Driver not found.");
 
-            RuleFor(x => x.Name)
+            RuleFor(d => d.Name)
                 .NotEmpty()
                 .MaximumLength(50);
 
-            RuleFor(x => x.LicenseNumber)
+            RuleFor(d => d.LicenseNumber)
                 .NotEmpty()
                 .MaximumLength(20)
-                .MustAsync(BeUnique).WithMessage("License number must be unique.");
-        }
-
-        private async Task<bool> BeUnique(UpdateDriverCommand command, string license, CancellationToken token)
-        {
-            return !await _db.Drivers
-                .AnyAsync(d => d.LicenseNumber == license && d.Id != command.Id, token);
+                .MustAsync(async (cmd, license, ct) =>
+                    !await _db.Drivers.AnyAsync(d => d.LicenseNumber == license && d.Id != cmd.Id, ct))
+                .WithMessage("License number must be unique.");
         }
     
 }

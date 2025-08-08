@@ -27,14 +27,15 @@ public class VehiclesController : ControllerBase
     }
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleConmmand command)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDriverCommand command)
     {
-        if (id != command.Id)
-            return BadRequest("ID in route and body must match.");
+        command.Id = id;
 
         var success = await _mediator.Send(command);
         return success ? NoContent() : NotFound();
     }
+
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
