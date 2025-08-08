@@ -1,9 +1,9 @@
-﻿namespace Application.Commands;
-
-using Application.Commands;
+﻿using Application.Exceptions;
 using Infrastructure.Persistance;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+
+namespace Application.Commands;
 
 
 public class DeleteDriverCommandHandler : IRequestHandler<DeleteDriverCommand, bool>
@@ -11,13 +11,14 @@ public class DeleteDriverCommandHandler : IRequestHandler<DeleteDriverCommand, b
         private readonly LabDbContext _db;
         public DeleteDriverCommandHandler(LabDbContext db) => _db = db;
 
-        public async Task<bool> Handle(DeleteDriverCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteDriverCommand request, CancellationToken ct)
         {
-            var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == request.Id, cancellationToken);
-            if (driver is null) return false;
+            var driver = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == request.Id, ct);
+            if (driver is null)
+                throw new NotFoundException($"Driver not found with Id '{request.Id}'.");
 
             _db.Drivers.Remove(driver);
-            await _db.SaveChangesAsync(cancellationToken);
+            await _db.SaveChangesAsync(ct);
             return true;
         }
     
