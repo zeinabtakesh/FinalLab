@@ -1,5 +1,4 @@
 ﻿using Application.Exceptions;
-using Domain.Exceptions;                 // your custom NotFoundException
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
