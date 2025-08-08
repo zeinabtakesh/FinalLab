@@ -19,14 +19,12 @@ public class DriversController : ControllerBase
     public DriversController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
-    [Authorize(Roles = "fleet-user,fleet-admin")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.Send(new GetAllDriversQuery());
         return Ok(result);
     }
     [HttpGet("{id}")]
-    [Authorize(Roles = "fleet-user,fleet-admin")]
 
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -35,7 +33,6 @@ public class DriversController : ControllerBase
     }
     
     [HttpPost]
-    [Authorize(Roles = "fleet-admin")]
 
     public async Task<IActionResult> Create([FromBody] CreateDriverCommand command)
     {
@@ -44,7 +41,6 @@ public class DriversController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "fleet-admin")]
 
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDriverCommand command)
     {
@@ -56,7 +52,6 @@ public class DriversController : ControllerBase
 
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "fleet-admin")]
 
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -65,7 +60,6 @@ public class DriversController : ControllerBase
     }
 
     [HttpPost("assign-driver")]
-    [Authorize(Roles = "fleet-admin")]
 
     public async Task<IActionResult> AssignDriver([FromBody] AssignDriverCommand command)
     {
