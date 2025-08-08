@@ -2,6 +2,7 @@
 using Application.Abstractions.Interfaces;
 using Application.Commands;
 using Application.Queries;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalLab.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -17,21 +18,26 @@ public class DriversController : ControllerBase
     private readonly IMediator _mediator;
     public DriversController(IMediator mediator) => _mediator = mediator;
 
+    [Authorize(Roles = "")]
     [HttpGet]
+    [Authorize(Roles = "fleet-user,fleet-admin")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.Send(new GetAllDriversQuery());
         return Ok(result);
     }
     [HttpGet("{id}")]
+    [Authorize(Roles = "fleet-user,fleet-admin")]
+
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _mediator.Send(new GetDriverByIdQuery(id));
         return result is null ? NotFound() : Ok(result);
     }
-
-
+    
     [HttpPost]
+    [Authorize(Roles = "fleet-admin")]
+
     public async Task<IActionResult> Create([FromBody] CreateDriverCommand command)
     {
         var result = await _mediator.Send(command);
@@ -39,6 +45,8 @@ public class DriversController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "fleet-admin")]
+
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDriverCommand command)
     {
         command.Id = id;
@@ -49,6 +57,8 @@ public class DriversController : ControllerBase
 
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "fleet-admin")]
+
     public async Task<IActionResult> Delete(Guid id)
     {
         var success = await _mediator.Send(new DeleteDriverCommand(id));
@@ -56,6 +66,8 @@ public class DriversController : ControllerBase
     }
 
     [HttpPost("assign-driver")]
+    [Authorize(Roles = "fleet-admin")]
+
     public async Task<IActionResult> AssignDriver([FromBody] AssignDriverCommand command)
     {
         var success = await _mediator.Send(command);

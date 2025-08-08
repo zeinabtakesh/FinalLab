@@ -1,4 +1,5 @@
 ﻿using Application.Commands;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalLab.Controllers;
 
@@ -16,10 +17,12 @@ public class VehiclesController : ControllerBase
     public VehiclesController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
+    [Authorize(Roles = "fleet-user,fleet-admin")]
     public async Task<IActionResult> GetAll() =>
         Ok(await _mediator.Send(new GetAllVehiclesQuery()));
     
     [HttpGet("{id}")]
+    [Authorize(Roles = "fleet-user,fleet-admin")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _mediator.Send(new GetDriverByIdQuery(id));
@@ -27,6 +30,7 @@ public class VehiclesController : ControllerBase
     }
     
     [HttpPut("{id}")]
+    [Authorize(Roles = "fleet-admin")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDriverCommand command)
     {
         command.Id = id;
@@ -38,6 +42,7 @@ public class VehiclesController : ControllerBase
 
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "fleet-admin")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var success = await _mediator.Send(new DeleteVehicleCommand(id));
@@ -46,6 +51,7 @@ public class VehiclesController : ControllerBase
 
 
     [HttpPost]
+    [Authorize(Roles = "fleet-admin")]
     public async Task<IActionResult> Create(CreateVehicleCommand command)
     {
         var result = await _mediator.Send(command);
