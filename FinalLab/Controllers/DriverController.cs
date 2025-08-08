@@ -18,7 +18,6 @@ public class DriversController : ControllerBase
     private readonly IMediator _mediator;
     public DriversController(IMediator mediator) => _mediator = mediator;
 
-    [Authorize(Roles = "")]
     [HttpGet]
     [Authorize(Roles = "fleet-user,fleet-admin")]
     public async Task<IActionResult> GetAll()

@@ -15,9 +15,7 @@ public class KeycloakIdentityService : IIdentityService
     {
         _kc   = kc;
         _log  = log;
-        _realm = cfg["Keycloak:Realm"] ?? "final-lab";
-        // NOTE: For real admin calls you usually need a bearer token (client credentials).
-        // Add a DelegatingHandler here to attach tokens if needed.
+        _realm = cfg["Keycloak:Realm"] ?? "lab10";
     }
 
     public async Task<string> CreateUserAsync(string username, string tempPw, string role)
@@ -33,7 +31,7 @@ public class KeycloakIdentityService : IIdentityService
         var res = await _kc.PostAsJsonAsync($"/admin/realms/{_realm}/users", user);
         res.EnsureSuccessStatusCode();
 
-        var id = res.Headers.Location!.Segments.Last().TrimEnd('/'); // …/users/{id}
+        var id = res.Headers.Location!.Segments.Last().TrimEnd('/'); 
         var rolePayload = new[] { new { name = role } };
 
         var roleRes = await _kc.PostAsJsonAsync(

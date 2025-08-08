@@ -8,9 +8,12 @@ using Infrastructure.External.Auth;
 using Infrastructure.Persistance;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation.Middleware;
+
+IdentityModelEventSource.ShowPII = true;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +30,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
     if (oldProvider != null) options.ModelValidatorProviders.Remove(oldProvider);
 });
 
-
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateVehicleCommand).Assembly));
 
@@ -36,22 +38,23 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddAuthServices(builder.Configuration);
 
 var keycloak = builder.Configuration.GetSection("Keycloak");
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = keycloak["Authority"];  
-        options.Audience  = keycloak["Audience"];    
-        options.RequireHttpsMetadata = false;       
+        options.Authority = keycloak["Authority"];
+        options.Audience = keycloak["Audience"];
+        options.RequireHttpsMetadata = false;
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer   = true,
-            ValidIssuer      = keycloak["Authority"],
+            ValidateIssuer = true,
+            ValidIssuer = keycloak["Authority"],
             ValidateAudience = true,
-            ValidAudience    = keycloak["Audience"],
-            NameClaimType    = "preferred_username",
-            RoleClaimType    = ClaimTypes.Role
+            ValidAudience = keycloak["Audience"],
+            NameClaimType = "preferred_username",
+            RoleClaimType = ClaimTypes.Role
         };
 
         options.Events = new JwtBearerEvents
@@ -87,16 +90,25 @@ builder.Services
                 }
 
                 return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine("Auth failed: " + ctx.Exception);
+                return Task.CompletedTask;
+            },
+            OnChallenge = ctx =>
+            {
+                Console.WriteLine("Challenge: " + ctx.ErrorDescription);
+                return Task.CompletedTask;
             }
         };
     });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("FleetAdmin", p => p.RequireRole("fleet-admin"));
-    options.AddPolicy("FleetUser",  p => p.RequireRole("fleet-user"));
+    options.AddPolicy("fleet-admin", p => p.RequireRole("fleet-admin"));
+    options.AddPolicy("fleet-user", p => p.RequireRole("fleet-user"));
 });
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -127,13 +139,16 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+    app.UseStatusCodePages();
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
 }
 
 app.UseHttpsRedirection();
